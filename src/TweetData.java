@@ -9,8 +9,9 @@ public class TweetData implements Serializable
 	private static final long serialVersionUID = -6116080419193521353L;
 	
 
-	GeoLocation geoLoc;
- 	Place place;
+	double lat = 0;
+	double lon = 0;
+	//Place place;
  	String location;
  	String lang;
  	
@@ -18,8 +19,12 @@ public class TweetData implements Serializable
  	
  	public TweetData(GeoLocation geoLoc, Place place, String location, String lang)
  	{
- 		this.geoLoc = geoLoc;
- 		this.place = place;
+ 		if(geoLoc != null)
+ 		{
+	 		this.lat = geoLoc.getLatitude();
+	 		this.lon = geoLoc.getLongitude();
+ 		}
+ 		//this.place = place;
  		this.location = location;
  		this.lang = lang;
  	}
@@ -28,7 +33,7 @@ public class TweetData implements Serializable
  	@Override 
  	public String toString()
  	{
- 		return geoLoc + "|" + place + "|" + location + "|" + lang;
+ 		return lat + "|" + lon +  "|" + location + "|" + lang;
  	}
  	
 }
