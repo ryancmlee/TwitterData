@@ -7,7 +7,6 @@
 ./src/LocationMapper/SQLConnection.java
 ./src/LocationMapper/Record.java
 ./src/LocationMapper/Log.java
-./src/EntryPoint.java
 ./src/TextParser/PartManager.java
 ./src/TextParser/Part.java
 ./src/TextParser/Location.java
