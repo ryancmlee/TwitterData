@@ -1,9 +1,10 @@
-
-
-
-.class
 .settings/
 .classpath
 .project
-out/*
+
+
+*.class
+
+
+
 bin

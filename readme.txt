@@ -7,5 +7,8 @@ java -cp ./libs/twitter4j-3.0.3/lib/twitter4j-core-3.0.3.jar:./libs/twitter4j-3.
 
 
 
- java -cp ./libs/twitter4j-3.0.3/lib/twitter4j-async-3.0.3.jar:./libs/twitter4j-3.0.3/lib/twitter4j-core-3.0.3.jar:./libs/twitter4j-3.0.3/lib/twitter4j-stream-3.0.3.jar:./libs/twitter4j-3.0.3/lib/twitter4j-media-support-3.0.3.jar:./libs/twitter4j-3.0.3/lib/twitter4j-examples-3.0.3.jar:./src TwitterData
+
+
+
+java -cp ./libs/twitter4j-3.0.3/lib/twitter4j-async-3.0.3.jar:./libs/twitter4j-3.0.3/lib/twitter4j-core-3.0.3.jar:./libs/twitter4j-3.0.3/lib/twitter4j-stream-3.0.3.jar:./libs/twitter4j-3.0.3/lib/twitter4j-media-support-3.0.3.jar:./libs/twitter4j-3.0.3/lib/twitter4j-examples-3.0.3.jar:./src TwitterData
 
