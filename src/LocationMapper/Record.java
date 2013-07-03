@@ -146,95 +146,27 @@ public class Record
 		}
 		
 		
-//		
-//		for(Entry<Column, Location> entry : textData.entrySet())
-//		{
-//			Column key = entry.getKey();
-//			String value = entry.getValue().outName;
-//			
-//			if(key == Column.country && value.equals("us"))
-//				value = "United States";
-//	
-//			if(key == Column.country && country.equals(countryNone))
-//			{
-//				
-//				country = "'" + value + "'";
-//			}
-//			else if(key == Column.state_province && state.equals("NULL"))
-//			{
-//				
-//				state = "'" + value + "'";
-//				country = "'" + entry.getValue().countryCode + "'";
-//			}
-//			else if(key == Column.city && city.equals("NULL"))
-//			{
-//				city = "'" + value + "'";
-//				state = "'" + entry.getValue().stateCode + "'";
-//				country = "'" + entry.getValue().countryCode + "'";
-//			}
-//			else if(key == Column.postal_code && zip.equals("NULL"))
-//			{
-//				zip = "'" + value + "'";
-//			}
-//			
-//		}
-			
 		
-		
-//		if(country.equals("'us'"))
-//			country = "'United States'";
 		
 		
 		
 		if(country != null)
 		{
-			addData(country + "." + state + "." + city, LocationMapper.hits);
+			String data = country + "." + state + "." + city;
+			
+			if( LocationMapper.hits.containsKey(data))
+			{
+				long count =  LocationMapper.hits.get(data);
+				LocationMapper.hits.put(data, ++count);
+			}
+			else
+				 LocationMapper.hits.put(data, 1l);
 		}
-//		if(state != null)
-//		{
-//			addData(state, LocationMapper.states);
-//		}	
-//		if(city != null)
-//		{
-//			addData(city, LocationMapper.cities);
-//		}
-//		if(zip != null)
-//		{
-//			addData(zip, LocationMapper.postals);
-//		}
-		
-//		country = country.replaceAll("'", "''");
-//		state = stat;e.replaceAll("'", "''");
-//		city = city.replaceAll("'", "''");
 
-
-		//String sendString = "UPDATE datasift_results SET country=" + country + " , state_province=" + state + " , city=" + city + " , postal_code=" + zip + " WHERE id=" + id + "; ";
-		
-		
-		
-		
-		
-
-		return;
 	}
 	
 	
-	public void addData(String data, HashMap<String, Integer> dataMap)
-	{
-		
-		if(dataMap.containsKey(data))
-		{
-			int count = dataMap.get(data);
-			dataMap.put(data, ++count);
-		}
-		else
-			dataMap.put(data, 1);
-							
-		
-		
-		
-		
-	}
+
 	
 	
 	public String toString()

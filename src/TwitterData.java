@@ -180,7 +180,8 @@ public class TwitterData  implements Serializable
 	}
 
 	
-	final int batchCount = 100;
+	final int batchCount = 20000;
+	
 	long runningLocTotal = 0;
 	long totalRawTweets = 0;
 	
@@ -200,7 +201,7 @@ public class TwitterData  implements Serializable
 
 		locMapper = new LocationMapper(args);
 		
-		runningLocTotal = locMapper.TEMP_runningLocTotal;
+		runningLocTotal = locMapper.TEMP_totalGeoTweets;
 		totalRawTweets = locMapper.TEMP_totalRawTweets;
 		
 		
@@ -249,18 +250,18 @@ public class TwitterData  implements Serializable
 
 
 
-	void writeHits(String dirName, HashMap<String, Integer> map)
+	void writeHits(String dirName, HashMap<String, Long> map)
 	{
 		ArrayList<String> temp = new ArrayList<String>();
 		for(String key : map.keySet())
 		{
-			int value = map.get(key);
+			long value = map.get(key);
 			temp.add(key + "=" + value);
 		}
 		
 		Collections.sort(temp);
 		
-		temp.add(0, "runningTotal=" + runningLocTotal);
+		temp.add(0, "totalGeoTweets=" + runningLocTotal);
 		temp.add(0, "totalRawTweets=" + totalRawTweets);
 
 		
@@ -275,7 +276,6 @@ public class TwitterData  implements Serializable
 		synchronized (dataBuffer)
 		{
 			dataBuffer.add(tweetData);
-			runningLocTotal++;
 		}
 		
 		locMapper.ProcessAndUpdate(0, (float)tweetData.lat, (float)tweetData.lon, tweetData.location, tweetData.lang);
@@ -322,9 +322,14 @@ public class TwitterData  implements Serializable
      	String userKey = id + "";
      	if(geoLoc != null || loc.equals("") == false)
      	{
-     		TweetData temp = new TweetData(geoLoc, place, loc, lang, id, name, date);
-     		userKey += "_GeoTrue";
-     		addTweet(temp);
+     		runningLocTotal++;
+     		
+     		if(LocationMapper.users.containsKey(userKey + "_GeoTrue") == false)
+    		{
+     			TweetData temp = new TweetData(geoLoc, place, loc, lang, id, name, date);
+	     		userKey += "_GeoTrue";
+	     		addTweet(temp);
+    		}
      	}
 
      	

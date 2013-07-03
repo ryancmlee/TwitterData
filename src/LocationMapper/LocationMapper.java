@@ -34,7 +34,7 @@ public class LocationMapper
 	public PartManager partManager;
 	
 	
-	public static HashMap<String, Integer> hits = new HashMap<String, Integer>();
+	public static HashMap<String, Long> hits = new HashMap<String, Long>();
 	public static HashMap<String, Integer> users = new HashMap<String, Integer>();
 	
 	
@@ -57,7 +57,7 @@ public class LocationMapper
 //
 //	}
 	
-	public long TEMP_runningLocTotal = 0;
+	public long TEMP_totalGeoTweets = 0;
 	public long TEMP_totalRawTweets = 0;
 	
 
@@ -110,11 +110,11 @@ public class LocationMapper
 			for(String string : TextParser.LoadTextFile("out/hits.txt", null, false))
 			{
 				String[] strings = string.split("=");		
-				int tempInt = Integer.parseInt(strings[1]);
+				Long tempInt = Long.parseLong(strings[1]);
 				hits.put(strings[0], tempInt);
 			}
 			
-			TEMP_runningLocTotal = hits.get("runningTotal");
+			TEMP_totalGeoTweets = hits.get("totalGeoTweets");
 			TEMP_totalRawTweets = hits.get("totalRawTweets");
 			
 			hits.remove("runningTotal");
@@ -167,7 +167,7 @@ public class LocationMapper
 
 		//load LatLongParser
 		latLongParser = new LatLongParser();
-		//latLongParser.loadData(dataDir);
+		latLongParser.loadData(shapeDataDir);
 		
 	
 		
