@@ -20,7 +20,7 @@ public class LocationMapper
 {
 	public static String workDir = "";
 	public static String logDir = "";
-	public static String dataDir = "data";// /home/ryan/base/bin/LocationMapperV3/data"; //D:\data; //./../../persistant/location_data
+	public static String shapeDataDir = "/home/ryan/base/bin/LocationMapperV3/data";// /home/ryan/base/bin/LocationMapperV3/data"; //D:\\data; //./../../persistant/location_data
 	//public static String textDir = "text";
 	
 	public DateTime startDateTime;
@@ -64,22 +64,22 @@ public class LocationMapper
 	public LocationMapper(String[] args)
 	{
 		Log.doConsolePrint = true;
-		Log.doLog = true;
+		Log.doLog = false;
 		
 	
 		
 
 		try
 		{
-			dataDir = args[0];
+			shapeDataDir = args[0];
 		}
 		catch (Exception e)
 		{
-			Log.log("No dataDir set, defualting to: " + dataDir);
+			Log.log("No dataDir set, defualting to: " + shapeDataDir);
 		}
 		
 		
-		this.logDir = dataDir + "/logs";
+		this.logDir = shapeDataDir + "/logs";
 		
 		
 		this.startDateTime = new DateTime();
@@ -90,13 +90,13 @@ public class LocationMapper
 //		Log.log("port = " + port);
 //		Log.log("userName = " + userName);
 //		Log.log("password = " + password);
-		Log.log("dataDir = " + dataDir);
+		Log.log("shapeDataDir = " + shapeDataDir);
 		Log.log(Log.breakString);
 		
 		
-		if (!new File(dataDir).isDirectory())
+		if (!new File(shapeDataDir).isDirectory())
 		{
-			Log.log(dataDir + "does not exist!    Exiting(-1)");
+			Log.log(shapeDataDir + "does not exist!    Exiting(-1)");
 			Exit(-1);
 		}
 		
@@ -155,8 +155,8 @@ public class LocationMapper
 	
 		//load textParser
 		TextParser textParser = new TextParser();
-		textParser.loadText(dataDir);
-		textParser.CreateMasterOut(dataDir);
+		textParser.loadText(shapeDataDir);
+		textParser.CreateMasterOut(shapeDataDir);
 	
 
 		//build partmap
