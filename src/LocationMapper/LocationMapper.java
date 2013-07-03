@@ -20,10 +20,10 @@ public class LocationMapper
 {
 	public static String workDir = "";
 	public static String logDir = "";
-	public static String dataDir = "/home/ryan/base/bin/LocationMapperV3/data";
+	public static String dataDir = "data";// /home/ryan/base/bin/LocationMapperV3/data"; //D:\data; //./../../persistant/location_data
 	//public static String textDir = "text";
 	
-	public DateTime startDateTime;;
+	public DateTime startDateTime;
 
 //	public SQLConnection sqlConnectionIN;
 //	public SQLConnection sqlConnectionOUT;
@@ -35,6 +35,9 @@ public class LocationMapper
 	
 	
 	public static HashMap<String, Integer> hits = new HashMap<String, Integer>();
+	public static HashMap<String, Integer> users = new HashMap<String, Integer>();
+	
+	
 //	public static HashMap<String, Integer> states = new HashMap<String, Integer>();
 //	public static HashMap<String, Integer> cities = new HashMap<String, Integer>();
 //	public static HashMap<String, Integer> postals = new HashMap<String, Integer>();
@@ -54,54 +57,27 @@ public class LocationMapper
 //
 //	}
 	
+	public long TEMP_runningLocTotal = 0;
+	public long TEMP_totalRawTweets = 0;
 	
-	
-	public LocationMapper()
+
+	public LocationMapper(String[] args)
 	{
 		Log.doConsolePrint = true;
 		Log.doLog = true;
 		
-//		String address = null;
-//		String serverName = null;
-//		String port = null;
-//		String userName = null;
-//		String password = null;
-//
-//		
-//
-//		try
-//		{
-//			address   = args[0];
-//			serverName  = args[1];
-//			port  = args[2];
-//			userName  = args[3];
-//			password = args[4];
-//
-//			
-//
-//			if(args.length > 5 && (args[5] != null || args[5] != "" || args[5] != "0"))
-//			{
-//				dataDir = args[5];
-//				if(new File(dataDir).exists() == false)
-//				{
-//					Log.log("ERROR: unable to verify dataDir path: " + dataDir);
-//					throw new Exception("");
-//				}
-//			}
-//		}
-//		catch (Exception e)
-//		{
-//			Log.log("args[] error:");
-//			Log.log("address = args[0]");
-//			Log.log("serverName = args[1]");
-//			Log.log("port = args[2]");
-//			Log.log("userName = args[3]");
-//			Log.log("password = args[4");
-//			Log.log("dataDir = args[5] - OPTIONAL defualt = " + dataDir);
-//
-//			Log.log("Exiting...");
-//			Exit(1);
-//		}
+	
+		
+
+		try
+		{
+			dataDir = args[0];
+		}
+		catch (Exception e)
+		{
+			Log.log("No dataDir set, defualting to: " + dataDir);
+		}
+		
 		
 		this.logDir = dataDir + "/logs";
 		
@@ -118,6 +94,35 @@ public class LocationMapper
 		Log.log(Log.breakString);
 		
 		
+		if (!new File(dataDir).isDirectory())
+		{
+			Log.log(dataDir + "does not exist!    Exiting(-1)");
+			Exit(-1);
+		}
+		
+		if (new File("out/users.dat").isFile() &&  new File("out/hits.txt").isFile() && new File("out/rawData.json").isFile())
+		{
+			Log.log("loading data from last session");
+			Log.log("\tloading users.dat");
+			LocationMapper.users = (HashMap<String, Integer>) TextParser.loadSerializedData("out/users.dat", null, true);
+			
+			Log.log("\tloading hits.txt");
+			for(String string : TextParser.LoadTextFile("out/hits.txt", null, false))
+			{
+				String[] strings = string.split("=");		
+				int tempInt = Integer.parseInt(strings[1]);
+				hits.put(strings[0], tempInt);
+			}
+			
+			TEMP_runningLocTotal = hits.get("runningTotal");
+			TEMP_totalRawTweets = hits.get("totalRawTweets");
+			
+			hits.remove("runningTotal");
+			hits.remove("totalRawTweets");
+			
+		}
+		else
+			Log.log("No data from perevious session found! FYI");
 		
 		
 ////		test connection to server

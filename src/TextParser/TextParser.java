@@ -7,19 +7,105 @@ import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import LatLongParser.Column;
 import LocationMapper.Log;
 
 public class TextParser 
 {
-	private ArrayList<String> LoadTextFile(String primDir, String optionDir, boolean skipFirstLine)
+	
+	
+
+	public static Object loadSerializedData(String primPath, String optionName, boolean compressed)
+	{
+		String fileLocation = primPath;
+		if(optionName != null && optionName.equals("") == false)
+			fileLocation += "/" + optionName;
+		
+		
+		Object data = null;
+		try
+		{
+			if(compressed)
+			{
+				FileInputStream fileIn = new FileInputStream(fileLocation);
+				GZIPInputStream gzipIn = new GZIPInputStream(fileIn);
+				ObjectInputStream in = new ObjectInputStream(gzipIn);
+				data = in.readObject();
+				in.close();
+				gzipIn.close();
+				fileIn.close();
+			}
+			else
+			{
+				FileInputStream fileIn = new FileInputStream(fileLocation);
+				ObjectInputStream in = new ObjectInputStream(fileIn);
+				data = in.readObject();
+				in.close();
+				fileIn.close();
+			}
+		}
+		catch (Exception e)
+		{
+			System.out.println("loadSerializedData failed: " + e + ".  returning null...");
+			return null;
+		}
+
+		return data;
+	}
+	public static boolean saveDataSerialized(Object data, String primPath, String optionName, boolean compressed)
+	{
+		String fileLocation = primPath;
+		
+		if(fileLocation.endsWith("/"))
+			fileLocation = fileLocation.substring(0, fileLocation.length() - 1);
+		if(optionName != null && optionName.equals("") == false)
+			fileLocation += "/" + optionName;
+		
+		
+		try
+		{
+			if(compressed)
+			{
+				FileOutputStream fileOut = new FileOutputStream(fileLocation);
+				GZIPOutputStream gzipOut = new GZIPOutputStream(fileOut);
+				ObjectOutputStream objectOut = new ObjectOutputStream(gzipOut);
+
+				objectOut.writeObject(data);
+				objectOut.close();
+				gzipOut.close();
+				fileOut.close();
+			}
+			else
+			{
+				FileOutputStream fileOut = new FileOutputStream(fileLocation);
+				ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+
+				objectOut.writeObject(data);
+				objectOut.close();
+				fileOut.close();
+			}
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			return false;
+		}
+		return true;
+	}
+
+	public static ArrayList<String> LoadTextFile(String primDir, String optionDir, boolean skipFirstLine)
 	{
 		ArrayList<String> data = new ArrayList<String>();
 
@@ -52,25 +138,22 @@ public class TextParser
 		}
 		catch (Exception e)
 		{
-			Log.log("ERROR in LoadTextFile ", e);
+			System.out.println("ERROR in LoadTextFile " + e);
 		}
 
 		return data;
 	}
-
-	private boolean writeText(String primDir, String optionDir, ArrayList<String> data)
+	public static boolean writeText(String primDir, String optionDir, ArrayList<String> data, boolean append)
 	{
 
 		String fileLocation = primDir;
 
 		if(optionDir != null && optionDir.equals("") == false)
 			fileLocation += "/" + optionDir;
-
-
 		try
 		{
 
-			BufferedWriter out = new BufferedWriter(new FileWriter(new File(fileLocation)));
+			BufferedWriter out = new BufferedWriter(new FileWriter(new File(fileLocation), append));
 
 			for(String line : data)
 			{
@@ -83,41 +166,17 @@ public class TextParser
 		}
 		catch (Exception e)
 		{
-			Log.log("Failed to write out " + fileLocation ,e);
+			System.out.println("Failed to write out " + fileLocation  + " |  " + e);
 			return false;
 		}
-
-
-
-		//		
-		//		String fileLocation = primDir;
-		//
-		//		if(optionDir != null && optionDir.equals("") == false)
-		//			fileLocation += "/" + optionDir;
-		//		
-		//		
-		//		FileWriter out = null;
-		//		try
-		//		{
-		//			File file = new File(fileLocation);
-		//			out = new FileWriter(file);
-		//			for(String line : data)
-		//			{
-		//				out.write(line + "\n");
-		//			}
-		//
-		//			if(out != null)
-		//				out.close();
-		//		}
-		//		catch (Exception e)
-		//		{
-		//			Log.log("Failed to write out " + fileLocation ,e);
-		//			return false;
-		//		}
 
 		return true; 
 	}
 
+	
+
+	
+	
 //	private Location stndFromStatoids(String data, int oNameIndex, int countryAndStateIndex, int popIndex, int aliasIndex, Column column) 
 //	{
 //
@@ -351,8 +410,7 @@ public class TextParser
 		return FIPStoNameMap;
 	}
 
-//	COUNTRY NAME||ISO 3166-2 SUB-DIVISION/STATE CODE||ISO 3166-2 SUBDIVISION/STATE NAME||ISO 3166-2 PRIMARY LEVEL NAME||SUBDIVISION/STATE ALTERNATE NAMES
-//	Afghanistan[0]	AF-BDS[1]	Badakhshān[2]	Province[3]		Badaẖšan[4]
+
 	private HashMap<String, String> loadNameToISOcdh(String data)
 	{
 		HashMap<String, String> nameToISOmap = new  HashMap<String, String>();
@@ -1086,7 +1144,7 @@ public class TextParser
 		for(Location loc : allLoc.values())
 			outStrings.add(loc.toString());
 		Collections.sort(outStrings);
-		this.writeText(tempFileLoc, null, outStrings);
+		TextParser.writeText(tempFileLoc, null, outStrings, false);
 		Log.log(Log.tab + outStrings.size() + " Locations");
 
 
