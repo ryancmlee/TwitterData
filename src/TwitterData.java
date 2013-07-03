@@ -22,6 +22,7 @@ import java.util.zip.GZIPOutputStream;
 
 
 import LocationMapper.LocationMapper;
+import LocationMapper.Log;
 
 import com.google.gson.Gson;
 
@@ -182,12 +183,10 @@ public class TwitterData  implements Serializable
 	
 	final int batchCount = 20000;
 	
-	long runningLocTotal = 0;
+	long totalGeoTweets = 0;
 	long totalRawTweets = 0;
 	
-	
-	
-	
+
 	ArrayList<TweetData> dataBuffer = new ArrayList<TweetData>(batchCount);
 
 
@@ -201,33 +200,17 @@ public class TwitterData  implements Serializable
 
 		locMapper = new LocationMapper(args);
 		
-		runningLocTotal = locMapper.TEMP_totalGeoTweets;
+		totalGeoTweets = locMapper.TEMP_totalGeoTweets;
 		totalRawTweets = locMapper.TEMP_totalRawTweets;
 		
+		
+
 		
 		  StatusListener listener = new StatusListener()
 		  {
 		        public void onStatus(Status status) 
 		        {
 		        	doOnStatus(status);
-//		        	totalRawTweets++;
-//		        	
-//		        	User user = status.getUser();
-//		        	
-//		         	String loc = user.getLocation();
-//		         	String lang = user.getLang();
-//		         	String name = user.getName();
-//		         	long id = user.getId();
-//		         	
-//		         	GeoLocation geoLoc = status.getGeoLocation();
-//		         	Place place = status.getPlace();
-//		         	Date date = status.getCreatedAt();
-//
-//		         	if(geoLoc != null || loc.equals("") == false)
-//		         	{
-//		         		TweetData temp = new TweetData(geoLoc, place, loc, lang, id, name, date);
-//		         		addTweet(temp);
-//		         	}
 		        }
 		        public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {}
 		        public void onTrackLimitationNotice(int numberOfLimitedStatuses) {}
@@ -261,7 +244,7 @@ public class TwitterData  implements Serializable
 		
 		Collections.sort(temp);
 		
-		temp.add(0, "totalGeoTweets=" + runningLocTotal);
+		temp.add(0, "totalGeoTweets=" + totalGeoTweets);
 		temp.add(0, "totalRawTweets=" + totalRawTweets);
 
 		
@@ -270,7 +253,7 @@ public class TwitterData  implements Serializable
 	
 	
 	ArrayList<String> jsonDatas = new ArrayList<String>(batchCount);
-	ArrayList<TweetData> dataMirror;// = new ArrayList<TweetData>(batchCount);
+	ArrayList<TweetData> writeBuffer;
 	private void addTweet(TweetData tweetData)
 	{
 		synchronized (dataBuffer)
@@ -286,10 +269,10 @@ public class TwitterData  implements Serializable
 			
 			synchronized (dataBuffer)
 			{
-				dataMirror = new ArrayList<TweetData>(dataBuffer); //copy to avoid adding data while iterating
+				writeBuffer = new ArrayList<TweetData>(dataBuffer); //copy to avoid adding data while iterating
 				dataBuffer.clear();
 			}
-			for(TweetData tdata : dataMirror)
+			for(TweetData tdata : writeBuffer)
 			{
 				String jsonData = gson.toJson(tdata);
 				jsonDatas.add(jsonData);
@@ -300,7 +283,7 @@ public class TwitterData  implements Serializable
 			writeHits("out/hits.txt", LocationMapper.hits);
 			saveDataSerialized(LocationMapper.users, "out/users.dat", null, true);
 			
-			System.out.println("[" + new Date() + "]runningTotal=" + runningLocTotal + ", totalRawTweets=" + totalRawTweets);
+			System.out.println("[" + new Date() + "]runningTotal=" + totalGeoTweets + ", totalRawTweets=" + totalRawTweets);
 
 		}
 	}
@@ -322,7 +305,7 @@ public class TwitterData  implements Serializable
      	String userKey = id + "";
      	if(geoLoc != null || loc.equals("") == false)
      	{
-     		runningLocTotal++;
+     		totalGeoTweets++;
      		
      		if(LocationMapper.users.containsKey(userKey + "_GeoTrue") == false)
     		{

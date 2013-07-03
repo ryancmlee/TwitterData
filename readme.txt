@@ -11,8 +11,8 @@ hits.txt --	a map with location and the number of times hit for location + some 
 
 rawData.json -- raw data of tweets that have geolocation (one entry per handleID)
 
-users.dat 	 -- serialized object of type java.util.HashMap<String, Integer> Where String is (handleID) or (handleID" + _Geo")[depending if the tweet has geo data]  and Interger it hit count
-				note its also gziped.  
+users.dat 	 -- serialized object of type java.util.HashMap<String, Integer> Where String is (handleID) or (handleID + "_Geo")[depending if the tweet has geo data]  and Interger is hit count
+				note its also gziped for compression.  
 
 
 

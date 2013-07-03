@@ -20,7 +20,7 @@ public class LocationMapper
 {
 	public static String workDir = "";
 	public static String logDir = "";
-	public static String shapeDataDir = "/home/ryan/base/bin/LocationMapperV3/data";// /home/ryan/base/bin/LocationMapperV3/data"; //D:\\data; //./../../persistant/location_data
+	public static String shapeDataDir = "./../../persistant/location_data";// /home/ryan/base/bin/LocationMapperV3/data"; //D:\\data; //./../../persistant/location_data
 	//public static String textDir = "text";
 	
 	public DateTime startDateTime;
@@ -61,6 +61,7 @@ public class LocationMapper
 	public long TEMP_totalRawTweets = 0;
 	
 
+	@SuppressWarnings("unchecked")
 	public LocationMapper(String[] args)
 	{
 		Log.doConsolePrint = true;
@@ -117,9 +118,12 @@ public class LocationMapper
 			TEMP_totalGeoTweets = hits.get("totalGeoTweets");
 			TEMP_totalRawTweets = hits.get("totalRawTweets");
 			
-			hits.remove("runningTotal");
+			hits.remove("totalGeoTweets");
 			hits.remove("totalRawTweets");
 			
+			
+			Log.log("totalRawTweets=" + TEMP_totalRawTweets);
+			Log.log("runningLocTotal=" + TEMP_totalGeoTweets);			
 		}
 		else
 			Log.log("No data from perevious session found! FYI");
